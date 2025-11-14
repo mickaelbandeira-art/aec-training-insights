@@ -24,11 +24,11 @@ const Index = () => {
   };
 
   return (
-    <>
+    <div className="pt-16">
       {currentScreen === 'landing' && <LandingScreen onStart={handleStart} />}
       {currentScreen === 'quiz' && <QuizScreen onComplete={handleComplete} />}
       {currentScreen === 'results' && <ResultsScreen scores={scores} onRestart={handleRestart} />}
-    </>
+    </div>
   );
 };
 

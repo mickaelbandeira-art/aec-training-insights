@@ -171,6 +171,21 @@ All colors MUST be HSL.
   .animate-pulse-glow {
     animation: pulse-glow 2s ease-in-out infinite;
   }
+
+  @keyframes pulse-logo {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.05);
+      opacity: 0.85;
+    }
+  }
+
+  .animate-pulse-logo {
+    animation: pulse-logo 2s ease-in-out infinite;
+  }
 }
 
 @layer base {
