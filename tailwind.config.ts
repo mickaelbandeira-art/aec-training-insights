@@ -13,12 +13,9 @@ export default {
       },
     },
     extend: {
-<<<<<<< HEAD
       fontFamily: {
         sans: ['Roboto', 'sans-serif'],
       },
-=======
->>>>>>> 1e9b084054a60f9a89e106831ada5bd8cb959cec
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -53,7 +50,6 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-<<<<<<< HEAD
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -68,13 +64,6 @@ export default {
           "dark-blue": "hsl(var(--aec-dark-blue))",
           cyan: "hsl(var(--aec-cyan))",
           "light-cyan": "hsl(var(--aec-light-cyan))",
-=======
-        disc: {
-          dominance: "hsl(var(--disc-dominance))",
-          influence: "hsl(var(--disc-influence))",
-          stability: "hsl(var(--disc-stability))",
-          conformity: "hsl(var(--disc-conformity))",
->>>>>>> 1e9b084054a60f9a89e106831ada5bd8cb959cec
         },
       },
       borderRadius: {
@@ -84,7 +73,6 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-<<<<<<< HEAD
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
         },
@@ -99,32 +87,13 @@ export default {
         "slide-in": {
           "0%": { opacity: "0", transform: "translateX(-20px)" },
           "100%": { opacity: "1", transform: "translateX(0)" },
-=======
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
-        },
-        "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
->>>>>>> 1e9b084054a60f9a89e106831ada5bd8cb959cec
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-<<<<<<< HEAD
         "fade-in": "fade-in 0.5s ease-out forwards",
         "slide-in": "slide-in 0.4s ease-out forwards",
-=======
->>>>>>> 1e9b084054a60f9a89e106831ada5bd8cb959cec
       },
     },
   },
