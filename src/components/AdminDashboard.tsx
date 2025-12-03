@@ -4,13 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { getStatistics, getResponses, clearResponses, type FormResponse } from '@/lib/storage';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend
 } from 'recharts';
 import {
   ArrowLeft, Users, Clock, MapPin, FileText, Home, Briefcase,
-  MessageSquare, Trash2, RefreshCw, TrendingUp
+  MessageSquare, Trash2, RefreshCw, TrendingUp, LogOut
 } from 'lucide-react';
 import logo from '@/assets/logo-aec.png';
 
@@ -64,6 +65,11 @@ export function AdminDashboard() {
         variant: "destructive",
       });
     }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/login');
   };
 
   useEffect(() => {
@@ -134,6 +140,15 @@ export function AdminDashboard() {
             >
               <Trash2 className="w-4 h-4 mr-2" />
               Limpar Dados
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+              className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 ml-2"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sair
             </Button>
           </div>
         </div>

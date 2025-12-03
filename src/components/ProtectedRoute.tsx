@@ -1,37 +1,31 @@
-import { Navigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
-import { Loader2 } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-  allowedRoles?: string[];
-}
+export const ProtectedRoute = () => {
+  const [session, setSession] = useState<boolean | null>(null);
 
-export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
-  const { user, loading, userRole } = useAuth();
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(!!session);
+    });
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (session === null) {
+    return null; // Loading state
   }
 
-  if (!user) {
+  if (!session) {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && userRole && !allowedRoles.includes(userRole)) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center space-y-4">
-          <h1 className="text-2xl font-bold text-foreground">Acesso Negado</h1>
-          <p className="text-muted-foreground">Você não tem permissão para acessar esta página.</p>
-        </div>
-      </div>
-    );
-  }
-
-  return <>{children}</>;
+  return <Outlet />;
 };
