@@ -126,7 +126,7 @@ export function AdminDashboard() {
             variant="outline"
             size="sm"
             onClick={handleLogout}
-            className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
+            className="border-white/50 text-white hover:bg-white/20 hover:text-white"
           >
             <LogOut className="w-4 h-4 mr-2" />
             Sair
