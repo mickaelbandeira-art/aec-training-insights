@@ -88,3 +88,67 @@ export function getStatistics() {
     outros: { count: outrosEntries.length, percentage: (outrosEntries.length / total) * 100, entries: outrosEntries },
   };
 }
+
+export function filterResponsesByMonth(responses: FormResponse[], month: number | null, year: number): FormResponse[] {
+  if (month === null) {
+    // Filter by year only
+    return responses.filter(r => {
+      const date = new Date(r.timestamp);
+      return date.getFullYear() === year;
+    });
+  }
+
+  // Filter by month and year
+  return responses.filter(r => {
+    const date = new Date(r.timestamp);
+    return date.getMonth() === month && date.getFullYear() === year;
+  });
+}
+
+export function getAvailableYears(responses: FormResponse[]): number[] {
+  const years = responses.map(r => new Date(r.timestamp).getFullYear());
+  const uniqueYears = Array.from(new Set(years)).sort((a, b) => b - a);
+  return uniqueYears.length > 0 ? uniqueYears : [new Date().getFullYear()];
+}
+
+export function getStatisticsForFiltered(responses: FormResponse[]) {
+  const total = responses.length;
+
+  if (total === 0) {
+    return {
+      total: 0,
+      disponibilidadeHorario: { count: 0, percentage: 0 },
+      localidadeTreinamento: { count: 0, percentage: 0 },
+      pendenciasDocumento: { count: 0, percentage: 0 },
+      ausenciaHomeOffice: { count: 0, percentage: 0 },
+      outraOportunidadeEmprego: { count: 0, percentage: 0 },
+      periodoTreinamentoLongo: { count: 0, percentage: 0 },
+      afinidadeProduto: { count: 0, percentage: 0 },
+      residenciaOutraCidade: { count: 0, percentage: 0 },
+      outros: { count: 0, percentage: 0, entries: [] as string[] },
+    };
+  }
+
+  const disponibilidadeHorario = responses.filter(r => r.disponibilidadeHorario).length;
+  const localidadeTreinamento = responses.filter(r => r.localidadeTreinamento).length;
+  const pendenciasDocumento = responses.filter(r => r.pendenciasDocumento).length;
+  const ausenciaHomeOffice = responses.filter(r => r.ausenciaHomeOffice).length;
+  const outraOportunidadeEmprego = responses.filter(r => r.outraOportunidadeEmprego).length;
+  const periodoTreinamentoLongo = responses.filter(r => r.periodoTreinamentoLongo).length;
+  const afinidadeProduto = responses.filter(r => r.afinidadeProduto).length;
+  const residenciaOutraCidade = responses.filter(r => r.residenciaOutraCidade).length;
+  const outrosEntries = responses.filter(r => r.outros.trim() !== '').map(r => r.outros);
+
+  return {
+    total,
+    disponibilidadeHorario: { count: disponibilidadeHorario, percentage: (disponibilidadeHorario / total) * 100 },
+    localidadeTreinamento: { count: localidadeTreinamento, percentage: (localidadeTreinamento / total) * 100 },
+    pendenciasDocumento: { count: pendenciasDocumento, percentage: (pendenciasDocumento / total) * 100 },
+    ausenciaHomeOffice: { count: ausenciaHomeOffice, percentage: (ausenciaHomeOffice / total) * 100 },
+    outraOportunidadeEmprego: { count: outraOportunidadeEmprego, percentage: (outraOportunidadeEmprego / total) * 100 },
+    periodoTreinamentoLongo: { count: periodoTreinamentoLongo, percentage: (periodoTreinamentoLongo / total) * 100 },
+    afinidadeProduto: { count: afinidadeProduto, percentage: (afinidadeProduto / total) * 100 },
+    residenciaOutraCidade: { count: residenciaOutraCidade, percentage: (residenciaOutraCidade / total) * 100 },
+    outros: { count: outrosEntries.length, percentage: (outrosEntries.length / total) * 100, entries: outrosEntries },
+  };
+}

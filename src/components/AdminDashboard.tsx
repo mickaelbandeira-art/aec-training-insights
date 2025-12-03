@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { getStatistics, getResponses, clearResponses, type FormResponse } from '@/lib/storage';
+import { getStatistics, getResponses, clearResponses, type FormResponse, filterResponsesByMonth, getAvailableYears, getStatisticsForFiltered } from '@/lib/storage';
 import { exportToExcel } from '@/lib/exportUtils';
+import { MonthSelector } from '@/components/MonthSelector';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -44,12 +45,22 @@ const categoryIcons: Record<string, React.ElementType> = {
 
 export function AdminDashboard() {
   const navigate = useNavigate();
-  const [stats, setStats] = useState(getStatistics());
-  const [responses, setResponses] = useState<FormResponse[]>(getResponses());
+  const allResponses = getResponses();
+
+  const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
+  const [availableYears, setAvailableYears] = useState<number[]>(getAvailableYears(allResponses));
+
+  const filteredResponses = filterResponsesByMonth(allResponses, selectedMonth, selectedYear);
+  const [stats, setStats] = useState(getStatisticsForFiltered(filteredResponses));
+  const [responses, setResponses] = useState<FormResponse[]>(filteredResponses);
 
   const refreshData = () => {
-    setStats(getStatistics());
-    setResponses(getResponses());
+    const allData = getResponses();
+    const filtered = filterResponsesByMonth(allData, selectedMonth, selectedYear);
+    setStats(getStatisticsForFiltered(filtered));
+    setResponses(filtered);
+    setAvailableYears(getAvailableYears(allData));
     toast({
       title: "Dados atualizados",
       description: "Os dados foram atualizados com sucesso.",
@@ -99,12 +110,23 @@ export function AdminDashboard() {
   };
 
   useEffect(() => {
+    const allData = getResponses();
+    const filtered = filterResponsesByMonth(allData, selectedMonth, selectedYear);
+    setStats(getStatisticsForFiltered(filtered));
+    setResponses(filtered);
+    setAvailableYears(getAvailableYears(allData));
+  }, [selectedMonth, selectedYear]);
+
+  useEffect(() => {
     const interval = setInterval(() => {
-      setStats(getStatistics());
-      setResponses(getResponses());
+      const allData = getResponses();
+      const filtered = filterResponsesByMonth(allData, selectedMonth, selectedYear);
+      setStats(getStatisticsForFiltered(filtered));
+      setResponses(filtered);
+      setAvailableYears(getAvailableYears(allData));
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [selectedMonth, selectedYear]);
 
   const barChartData = [
     { name: 'Disp. Horário', value: stats.disponibilidadeHorario.count, fullName: categoryLabels.disponibilidadeHorario },
@@ -182,6 +204,17 @@ export function AdminDashboard() {
           <p className="text-sm sm:text-base text-muted-foreground">
             Visualize os resultados do formulário de treinamento
           </p>
+        </div>
+
+        {/* Month Selector */}
+        <div className="mb-6 sm:mb-8 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          <MonthSelector
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+            onMonthChange={setSelectedMonth}
+            onYearChange={setSelectedYear}
+            availableYears={availableYears}
+          />
         </div>
 
         {/* Total Responses Card */}
