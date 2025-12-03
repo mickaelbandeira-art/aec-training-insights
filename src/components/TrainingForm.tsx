@@ -234,7 +234,7 @@ export function TrainingForm() {
 
         {/* Footer */}
         <footer className="text-center mt-8 text-muted-foreground text-sm animate-fade-in" style={{ animationDelay: '0.8s' }}>
-          <p>© {new Date().getFullYear()} AeC - Relacionamento com Responsabilidade</p>
+          <p>Desenvolvido por Mickael Bandeira | Analista de Conteúdo</p>
         </footer>
       </div>
     </div>
