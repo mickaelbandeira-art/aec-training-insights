@@ -142,14 +142,14 @@ export function TrainingForm() {
 
         {/* Main Form Card */}
         <Card className="max-w-3xl mx-auto shadow-xl border-0 bg-card/80 backdrop-blur-sm animate-fade-in" style={{ animationDelay: '0.1s' }}>
-          <CardHeader className="gradient-primary text-primary-foreground rounded-t-lg pb-8">
-            <div className="flex items-center gap-3 mb-2">
+          <CardHeader className="gradient-primary text-primary-foreground rounded-t-lg pb-8 flex flex-col items-center text-center">
+            <div className="flex items-center gap-3 mb-2 justify-center">
               <CheckCircle2 className="w-8 h-8 text-secondary" />
               <CardTitle className="text-2xl sm:text-3xl font-bold">
                 Registro de Motivos de Desistência de Treinamento
               </CardTitle>
             </div>
-            <CardDescription className="text-primary-foreground/80 text-base">
+            <CardDescription className="text-primary-foreground/80 text-base text-center">
               Identificação dos fatores que levaram o candidato a não concluir o processo de capacitação
             </CardDescription>
           </CardHeader>
