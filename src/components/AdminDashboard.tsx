@@ -417,6 +417,7 @@ export function AdminDashboard() {
                     <tr className="border-b bg-muted/50">
                       <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm">Data/Hora</th>
                       <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm">Nome</th>
+                      <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden sm:table-cell">CPF</th>
                       <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden sm:table-cell">Telefone</th>
                       <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm">Motivos Selecionados</th>
                       <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm">Outros</th>
@@ -435,6 +436,9 @@ export function AdminDashboard() {
                         </td>
                         <td className="p-2 sm:p-3 text-foreground text-xs sm:text-sm font-medium align-top">
                           {response.nome || '-'}
+                        </td>
+                        <td className="p-2 sm:p-3 text-muted-foreground text-xs sm:text-sm hidden sm:table-cell align-top">
+                          {response.cpf || '-'}
                         </td>
                         <td className="p-2 sm:p-3 text-muted-foreground text-xs sm:text-sm hidden sm:table-cell align-top">
                           {response.telefone || '-'}

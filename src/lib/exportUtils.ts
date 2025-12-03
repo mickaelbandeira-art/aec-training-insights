@@ -23,6 +23,7 @@ export function exportToExcel(responses: FormResponse[], filename: string = 'res
     return {
       'Data/Hora': new Date(response.timestamp).toLocaleString('pt-BR'),
       'Nome': response.nome || '-',
+      'CPF': response.cpf || '-',
       'Telefone': response.telefone || '-',
       'Motivos Selecionados': selectionsText || '-',
       'Outros': response.outros || '-',

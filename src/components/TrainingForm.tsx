@@ -18,6 +18,7 @@ export function TrainingForm() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nome: '',
+    cpf: '',
     telefone: '',
     outros: '',
   });
@@ -77,11 +78,11 @@ export function TrainingForm() {
     e.preventDefault();
 
     // Validate required fields
-    if (!formData.nome.trim() || !formData.telefone.trim()) {
+    if (!formData.nome.trim() || !formData.telefone.trim() || !formData.cpf.trim()) {
       toast({
         variant: "destructive",
         title: "Campos obrigatórios",
-        description: "Por favor, preencha seu nome e telefone.",
+        description: "Por favor, preencha nome, CPF e telefone.",
       });
       return;
     }
@@ -93,6 +94,7 @@ export function TrainingForm() {
 
     saveResponse({
       nome: formData.nome,
+      cpf: formData.cpf,
       telefone: formData.telefone,
       selections: allSelections,
       outros: formData.outros,
@@ -106,6 +108,7 @@ export function TrainingForm() {
     // Reset form
     setFormData({
       nome: '',
+      cpf: '',
       telefone: '',
       outros: '',
     });
@@ -168,6 +171,28 @@ export function TrainingForm() {
                     placeholder="Digite seu nome completo"
                     value={formData.nome}
                     onChange={(e) => setFormData(prev => ({ ...prev, nome: e.target.value }))}
+                    className="border-2 focus:border-secondary focus:ring-secondary/20 transition-all"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="cpf" className="text-base font-medium">
+                    CPF <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="cpf"
+                    type="text"
+                    placeholder="000.000.000-00"
+                    value={formData.cpf}
+                    onChange={(e) => {
+                      let value = e.target.value.replace(/\D/g, '');
+                      if (value.length > 11) value = value.slice(0, 11);
+                      value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                      value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                      value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                      setFormData(prev => ({ ...prev, cpf: value }));
+                    }}
                     className="border-2 focus:border-secondary focus:ring-secondary/20 transition-all"
                     required
                   />

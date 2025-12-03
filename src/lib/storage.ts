@@ -9,6 +9,7 @@ export interface FormResponse {
   id: string;
   timestamp: Date;
   nome: string;
+  cpf: string;
   telefone: string;
   selections: PillarSelection[];
   outros: string;
