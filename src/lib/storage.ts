@@ -1,6 +1,8 @@
 export interface FormResponse {
   id: string;
   timestamp: Date;
+  nome: string;
+  telefone: string;
   disponibilidadeHorario: boolean;
   localidadeTreinamento: boolean;
   pendenciasDocumento: boolean;

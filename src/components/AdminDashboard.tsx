@@ -338,10 +338,12 @@ export function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto -mx-4 sm:mx-0">
-                <table className="w-full text-sm min-w-[800px] sm:min-w-full">
+                <table className="w-full text-sm min-w-[1000px] sm:min-w-full">
                   <thead>
                     <tr className="border-b bg-muted/50">
                       <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm">Data/Hora</th>
+                      <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm">Nome</th>
+                      <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden sm:table-cell">Telefone</th>
                       <th className="text-center p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden md:table-cell">Disp. Horário</th>
                       <th className="text-center p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden lg:table-cell">Localidade</th>
                       <th className="text-center p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden lg:table-cell">Pendências</th>
@@ -363,6 +365,12 @@ export function AdminDashboard() {
                             hour: '2-digit',
                             minute: '2-digit'
                           })}
+                        </td>
+                        <td className="p-2 sm:p-3 text-foreground text-xs sm:text-sm font-medium">
+                          {response.nome || '-'}
+                        </td>
+                        <td className="p-2 sm:p-3 text-muted-foreground text-xs sm:text-sm hidden sm:table-cell">
+                          {response.telefone || '-'}
                         </td>
                         <td className="p-2 sm:p-3 text-center hidden md:table-cell">
                           {response.disponibilidadeHorario && (

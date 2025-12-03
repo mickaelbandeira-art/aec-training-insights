@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { saveResponse } from '@/lib/storage';
 import { toast } from '@/hooks/use-toast';
-import { CheckCircle2, Send, Clock, MapPin, FileText, Home, Briefcase, MessageSquare } from 'lucide-react';
+import { CheckCircle2, Send, Clock, MapPin, FileText, Home, Briefcase, MessageSquare, User, Phone } from 'lucide-react';
 import logo from '@/assets/logo-aec.png';
 
 const formOptions = [
@@ -24,6 +25,8 @@ const formOptions = [
 export function TrainingForm() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    nome: '',
+    telefone: '',
     disponibilidadeHorario: false,
     localidadeTreinamento: false,
     pendenciasDocumento: false,
@@ -42,6 +45,17 @@ export function TrainingForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate required fields
+    if (!formData.nome.trim() || !formData.telefone.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Campos obrigatórios",
+        description: "Por favor, preencha seu nome e telefone.",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     // Simulate a small delay for better UX
@@ -56,6 +70,8 @@ export function TrainingForm() {
 
     // Reset form
     setFormData({
+      nome: '',
+      telefone: '',
       disponibilidadeHorario: false,
       localidadeTreinamento: false,
       pendenciasDocumento: false,
@@ -105,6 +121,45 @@ export function TrainingForm() {
 
           <CardContent className="p-6 sm:p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Name and Phone Fields */}
+              <div className="space-y-4 pb-4 border-b border-border">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <User className="w-5 h-5 text-secondary" />
+                    <Label htmlFor="nome" className="text-base font-medium">
+                      Nome Completo <span className="text-destructive">*</span>
+                    </Label>
+                  </div>
+                  <Input
+                    id="nome"
+                    type="text"
+                    placeholder="Digite seu nome completo"
+                    value={formData.nome}
+                    onChange={(e) => setFormData(prev => ({ ...prev, nome: e.target.value }))}
+                    className="border-2 focus:border-secondary focus:ring-secondary/20 transition-all"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Phone className="w-5 h-5 text-secondary" />
+                    <Label htmlFor="telefone" className="text-base font-medium">
+                      Telefone <span className="text-destructive">*</span>
+                    </Label>
+                  </div>
+                  <Input
+                    id="telefone"
+                    type="tel"
+                    placeholder="(00) 00000-0000"
+                    value={formData.telefone}
+                    onChange={(e) => setFormData(prev => ({ ...prev, telefone: e.target.value }))}
+                    className="border-2 focus:border-secondary focus:ring-secondary/20 transition-all"
+                    required
+                  />
+                </div>
+              </div>
+
               {/* Checkbox Options */}
               <div className="space-y-4">
                 {formOptions.map((option, index) => {
