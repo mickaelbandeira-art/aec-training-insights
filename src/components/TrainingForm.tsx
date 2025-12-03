@@ -12,14 +12,14 @@ import { CheckCircle2, Send, Clock, MapPin, FileText, Home, Briefcase, MessageSq
 import logo from '@/assets/logo-aec.png';
 
 const formOptions = [
-  { id: 'disponibilidadeHorario', label: 'Você possui disponibilidade de horário compatível com a vaga?', icon: Clock },
-  { id: 'localidadeTreinamento', label: 'A localização do treinamento é acessível para você?', icon: MapPin },
-  { id: 'pendenciasDocumento', label: 'Você possui algum documento pendente que possa impedir sua participação?', icon: FileText },
-  { id: 'ausenciaHomeOffice', label: 'A impossibilidade de atuar em home office impacta sua decisão?', icon: Home },
-  { id: 'outraOportunidadeEmprego', label: 'Você recebeu ou está participando de outra oportunidade de emprego?', icon: Briefcase },
-  { id: 'periodoTreinamentoLongo', label: 'O tempo de treinamento, sem remuneração, é um fator que dificulta sua participação?', icon: Clock },
-  { id: 'afinidadeProduto', label: 'Você sente que não tem afinidade com o produto ou serviço da operação?', icon: Briefcase },
-  { id: 'residenciaOutraCidade', label: 'Morar em outra cidade impede sua presença no treinamento presencial?', icon: MapPin },
+  { id: 'disponibilidadeHorario', label: 'Não tenho disponibilidade de horário compatível.', icon: Clock },
+  { id: 'localidadeTreinamento', label: 'A localização do treinamento não é acessível para mim.', icon: MapPin },
+  { id: 'pendenciasDocumento', label: 'Tenho pendências de documentação.', icon: FileText },
+  { id: 'ausenciaHomeOffice', label: 'A falta de opção de home office me impede de seguir.', icon: Home },
+  { id: 'outraOportunidadeEmprego', label: 'Estou seguindo outra oportunidade de emprego.', icon: Briefcase },
+  { id: 'periodoTreinamentoLongo', label: 'O treinamento longo e sem remuneração é um impeditivo.', icon: Clock },
+  { id: 'afinidadeProduto', label: 'Não tenho afinidade com o produto/serviço da operação.', icon: Briefcase },
+  { id: 'residenciaOutraCidade', label: 'Resido em outra cidade e não posso comparecer ao treinamento presencial.', icon: MapPin },
 ];
 
 export function TrainingForm() {
