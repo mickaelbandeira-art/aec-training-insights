@@ -12,14 +12,14 @@ import { CheckCircle2, Send, Clock, MapPin, FileText, Home, Briefcase, MessageSq
 import logo from '@/assets/logo-aec.png';
 
 const formOptions = [
-  { id: 'disponibilidadeHorario', label: 'Disponibilidade de Horário', icon: Clock },
-  { id: 'localidadeTreinamento', label: 'Localidade do Treinamento', icon: MapPin },
-  { id: 'pendenciasDocumento', label: 'Pendências de documento', icon: FileText },
-  { id: 'ausenciaHomeOffice', label: 'Ausência de home office', icon: Home },
-  { id: 'outraOportunidadeEmprego', label: 'Outra oportunidade de emprego', icon: Briefcase },
-  { id: 'periodoTreinamentoLongo', label: 'Período de treinamento longo e sem remuneração', icon: Clock },
-  { id: 'afinidadeProduto', label: 'Afinidade com o produto', icon: Briefcase },
-  { id: 'residenciaOutraCidade', label: 'Resido em outra cidade e não posso comparecer ao treinamento', icon: MapPin },
+  { id: 'disponibilidadeHorario', label: 'Você possui disponibilidade de horário compatível com a vaga?', icon: Clock },
+  { id: 'localidadeTreinamento', label: 'A localização do treinamento é acessível para você?', icon: MapPin },
+  { id: 'pendenciasDocumento', label: 'Você possui algum documento pendente que possa impedir sua participação?', icon: FileText },
+  { id: 'ausenciaHomeOffice', label: 'A impossibilidade de atuar em home office impacta sua decisão?', icon: Home },
+  { id: 'outraOportunidadeEmprego', label: 'Você recebeu ou está participando de outra oportunidade de emprego?', icon: Briefcase },
+  { id: 'periodoTreinamentoLongo', label: 'O tempo de treinamento, sem remuneração, é um fator que dificulta sua participação?', icon: Clock },
+  { id: 'afinidadeProduto', label: 'Você sente que não tem afinidade com o produto ou serviço da operação?', icon: Briefcase },
+  { id: 'residenciaOutraCidade', label: 'Morar em outra cidade impede sua presença no treinamento presencial?', icon: MapPin },
 ];
 
 export function TrainingForm() {
