@@ -126,10 +126,11 @@ export function AdminDashboard() {
             variant="outline"
             size="sm"
             onClick={handleLogout}
-            className="border-white/50 text-white hover:bg-white/20 hover:text-white"
+            className="border-white/50 bg-white/10 hover:bg-white/20"
+            style={{ color: 'white' }}
           >
             <LogOut className="w-4 h-4 mr-2" />
-            Sair
+            <span style={{ color: 'white' }}>Sair</span>
           </Button>
         </div>
       </header>
