@@ -122,35 +122,15 @@ export function AdminDashboard() {
             </Button>
             <img src={logo} alt="AeC Logo" className="h-10 object-contain brightness-0 invert" />
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={refreshData}
-              className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Atualizar
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleClearData}
-              className="border-destructive/50 text-destructive hover:bg-destructive/10"
-            >
-              <Trash2 className="w-4 h-4 mr-2" />
-              Limpar Dados
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleLogout}
-              className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 ml-2"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sair
-            </Button>
-          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleLogout}
+            className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Sair
+          </Button>
         </div>
       </header>
 
