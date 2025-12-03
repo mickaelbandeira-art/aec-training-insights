@@ -95,7 +95,12 @@ export function TrainingForm() {
       <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Header */}
         <header className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
-          <img src={logo} alt="AeC Logo" className="h-12 sm:h-16 object-contain animate-fade-in" />
+          <img
+            src={logo}
+            alt="AeC Logo"
+            className="h-8 sm:h-10 object-contain animate-fade-in cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => navigate('/')}
+          />
           <Button
             variant="outline"
             onClick={() => navigate('/admin')}
