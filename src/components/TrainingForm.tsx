@@ -149,7 +149,7 @@ export function TrainingForm() {
                 Registro de Motivos de Desistência de Treinamento
               </CardTitle>
             </div>
-            <CardDescription className="text-primary-foreground/80 text-base text-center">
+            <CardDescription className="text-primary-foreground/80 text-base text-center ml-12">
               Identificação dos fatores que levaram o candidato a não concluir o processo de capacitação
             </CardDescription>
           </CardHeader>
