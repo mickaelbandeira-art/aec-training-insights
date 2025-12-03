@@ -109,24 +109,24 @@ export function AdminDashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="gradient-primary text-primary-foreground py-4 px-4 sm:px-6 shadow-lg">
-        <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
+      <header className="gradient-primary text-primary-foreground py-3 sm:py-4 px-3 sm:px-6 shadow-lg">
+        <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-start">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => navigate('/')}
-              className="text-primary-foreground hover:bg-primary-foreground/10"
+              className="text-primary-foreground hover:bg-primary-foreground/10 h-8 w-8 sm:h-10 sm:w-10"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </Button>
-            <img src={logo} alt="AeC Logo" className="h-10 object-contain brightness-0 invert" />
+            <img src={logo} alt="AeC Logo" className="h-8 sm:h-10 object-contain brightness-0 invert" />
           </div>
           <Button
             variant="outline"
             size="sm"
             onClick={handleLogout}
-            className="border-white/50 bg-white/10 hover:bg-white/20"
+            className="border-white/50 bg-white/10 hover:bg-white/20 w-full sm:w-auto text-sm"
             style={{ color: 'white' }}
           >
             <LogOut className="w-4 h-4 mr-2" />
@@ -135,13 +135,13 @@ export function AdminDashboard() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
         {/* Title Section */}
-        <div className="mb-8 animate-fade-in">
-          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
+        <div className="mb-6 sm:mb-8 animate-fade-in">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-2">
             Dashboard Administrativo
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground">
             Visualize os resultados do formulário de treinamento
           </p>
         </div>
@@ -337,69 +337,74 @@ export function AdminDashboard() {
               <CardDescription>Histórico das respostas recebidas</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+              <div className="overflow-x-auto -mx-4 sm:mx-0">
+                <table className="w-full text-sm min-w-[800px] sm:min-w-full">
                   <thead>
                     <tr className="border-b bg-muted/50">
-                      <th className="text-left p-3 font-semibold">Data/Hora</th>
-                      <th className="text-center p-3 font-semibold">Disp. Horário</th>
-                      <th className="text-center p-3 font-semibold">Localidade</th>
-                      <th className="text-center p-3 font-semibold">Pendências</th>
-                      <th className="text-center p-3 font-semibold">Home Office</th>
-                      <th className="text-center p-3 font-semibold">Outra Oport.</th>
-                      <th className="text-center p-3 font-semibold">Período Longo</th>
-                      <th className="text-center p-3 font-semibold">Afinidade</th>
-                      <th className="text-center p-3 font-semibold">Outra Cidade</th>
-                      <th className="text-left p-3 font-semibold">Outros</th>
+                      <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm">Data/Hora</th>
+                      <th className="text-center p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden md:table-cell">Disp. Horário</th>
+                      <th className="text-center p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden lg:table-cell">Localidade</th>
+                      <th className="text-center p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden lg:table-cell">Pendências</th>
+                      <th className="text-center p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden xl:table-cell">Home Office</th>
+                      <th className="text-center p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden md:table-cell">Outra Oport.</th>
+                      <th className="text-center p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden xl:table-cell">Período Longo</th>
+                      <th className="text-center p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden xl:table-cell">Afinidade</th>
+                      <th className="text-center p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden lg:table-cell">Outra Cidade</th>
+                      <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm">Outros</th>
                     </tr>
                   </thead>
                   <tbody>
                     {responses.slice().reverse().slice(0, 10).map((response) => (
                       <tr key={response.id} className="border-b hover:bg-muted/30 transition-colors">
-                        <td className="p-3 text-muted-foreground">
-                          {new Date(response.timestamp).toLocaleString('pt-BR')}
+                        <td className="p-2 sm:p-3 text-muted-foreground text-xs sm:text-sm whitespace-nowrap">
+                          {new Date(response.timestamp).toLocaleString('pt-BR', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
                         </td>
-                        <td className="p-3 text-center">
+                        <td className="p-2 sm:p-3 text-center hidden md:table-cell">
                           {response.disponibilidadeHorario && (
-                            <span className="inline-block w-4 h-4 bg-secondary rounded-full" />
+                            <span className="inline-block w-3 h-3 sm:w-4 sm:h-4 bg-secondary rounded-full" />
                           )}
                         </td>
-                        <td className="p-3 text-center">
+                        <td className="p-2 sm:p-3 text-center hidden lg:table-cell">
                           {response.localidadeTreinamento && (
-                            <span className="inline-block w-4 h-4 bg-secondary rounded-full" />
+                            <span className="inline-block w-3 h-3 sm:w-4 sm:h-4 bg-secondary rounded-full" />
                           )}
                         </td>
-                        <td className="p-3 text-center">
+                        <td className="p-2 sm:p-3 text-center hidden lg:table-cell">
                           {response.pendenciasDocumento && (
-                            <span className="inline-block w-4 h-4 bg-secondary rounded-full" />
+                            <span className="inline-block w-3 h-3 sm:w-4 sm:h-4 bg-secondary rounded-full" />
                           )}
                         </td>
-                        <td className="p-3 text-center">
+                        <td className="p-2 sm:p-3 text-center hidden xl:table-cell">
                           {response.ausenciaHomeOffice && (
-                            <span className="inline-block w-4 h-4 bg-secondary rounded-full" />
+                            <span className="inline-block w-3 h-3 sm:w-4 sm:h-4 bg-secondary rounded-full" />
                           )}
                         </td>
-                        <td className="p-3 text-center">
+                        <td className="p-2 sm:p-3 text-center hidden md:table-cell">
                           {response.outraOportunidadeEmprego && (
-                            <span className="inline-block w-4 h-4 bg-secondary rounded-full" />
+                            <span className="inline-block w-3 h-3 sm:w-4 sm:h-4 bg-secondary rounded-full" />
                           )}
                         </td>
-                        <td className="p-3 text-center">
+                        <td className="p-2 sm:p-3 text-center hidden xl:table-cell">
                           {response.periodoTreinamentoLongo && (
-                            <span className="inline-block w-4 h-4 bg-secondary rounded-full" />
+                            <span className="inline-block w-3 h-3 sm:w-4 sm:h-4 bg-secondary rounded-full" />
                           )}
                         </td>
-                        <td className="p-3 text-center">
+                        <td className="p-2 sm:p-3 text-center hidden xl:table-cell">
                           {response.afinidadeProduto && (
-                            <span className="inline-block w-4 h-4 bg-secondary rounded-full" />
+                            <span className="inline-block w-3 h-3 sm:w-4 sm:h-4 bg-secondary rounded-full" />
                           )}
                         </td>
-                        <td className="p-3 text-center">
+                        <td className="p-2 sm:p-3 text-center hidden lg:table-cell">
                           {response.residenciaOutraCidade && (
-                            <span className="inline-block w-4 h-4 bg-secondary rounded-full" />
+                            <span className="inline-block w-3 h-3 sm:w-4 sm:h-4 bg-secondary rounded-full" />
                           )}
                         </td>
-                        <td className="p-3 text-muted-foreground max-w-[200px] truncate">
+                        <td className="p-2 sm:p-3 text-muted-foreground max-w-[120px] sm:max-w-[200px] truncate text-xs sm:text-sm">
                           {response.outros || '-'}
                         </td>
                       </tr>
