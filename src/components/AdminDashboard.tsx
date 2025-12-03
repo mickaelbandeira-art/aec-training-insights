@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { getStatistics, getResponses, clearResponses, type FormResponse } from '@/lib/storage';
+import { exportToExcel } from '@/lib/exportUtils';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -11,7 +12,7 @@ import {
 } from 'recharts';
 import {
   ArrowLeft, Users, Clock, MapPin, FileText, Home, Briefcase,
-  MessageSquare, Trash2, RefreshCw, TrendingUp, LogOut
+  MessageSquare, Trash2, RefreshCw, TrendingUp, LogOut, Download
 } from 'lucide-react';
 import logo from '@/assets/logo-aec.png';
 
@@ -70,6 +71,31 @@ export function AdminDashboard() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/login');
+  };
+
+  const handleExportExcel = () => {
+    if (responses.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Nenhum dado para exportar",
+        description: "Não há respostas para exportar.",
+      });
+      return;
+    }
+
+    try {
+      exportToExcel(responses);
+      toast({
+        title: "Excel exportado com sucesso!",
+        description: `${responses.length} resposta(s) exportada(s).`,
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao exportar",
+        description: "Ocorreu um erro ao gerar o arquivo Excel.",
+      });
+    }
   };
 
   useEffect(() => {
