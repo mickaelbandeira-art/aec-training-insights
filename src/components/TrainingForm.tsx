@@ -146,11 +146,11 @@ export function TrainingForm() {
             <div className="flex items-center gap-3 mb-2">
               <CheckCircle2 className="w-8 h-8 text-secondary" />
               <CardTitle className="text-2xl sm:text-3xl font-bold">
-                Forms Treinamento AeC
+                Registro de Motivos de Desistência de Treinamento
               </CardTitle>
             </div>
             <CardDescription className="text-primary-foreground/80 text-base">
-              Selecione os motivos que se aplicam à sua situação
+              Identificação dos fatores que levaram o candidato a não concluir o processo de capacitação
             </CardDescription>
           </CardHeader>
 
