@@ -1,16 +1,16 @@
+export interface PillarSelection {
+  pillarId: string;
+  pillarLabel: string;
+  subPillarId: string;
+  subPillarLabel: string;
+}
+
 export interface FormResponse {
   id: string;
   timestamp: Date;
   nome: string;
   telefone: string;
-  disponibilidadeHorario: boolean;
-  localidadeTreinamento: boolean;
-  pendenciasDocumento: boolean;
-  ausenciaHomeOffice: boolean;
-  outraOportunidadeEmprego: boolean;
-  periodoTreinamentoLongo: boolean;
-  afinidadeProduto: boolean;
-  residenciaOutraCidade: boolean;
+  selections: PillarSelection[];
   outros: string;
 }
 
@@ -46,6 +46,19 @@ export function clearResponses(): void {
   localStorage.removeItem(STORAGE_KEY);
 }
 
+export interface PillarStats {
+  pillarId: string;
+  pillarLabel: string;
+  count: number;
+  percentage: number;
+  subPillars: {
+    subPillarId: string;
+    subPillarLabel: string;
+    count: number;
+    percentage: number;
+  }[];
+}
+
 export function getStatistics() {
   const responses = getResponses();
   const total = responses.length;
@@ -53,38 +66,66 @@ export function getStatistics() {
   if (total === 0) {
     return {
       total: 0,
-      disponibilidadeHorario: { count: 0, percentage: 0 },
-      localidadeTreinamento: { count: 0, percentage: 0 },
-      pendenciasDocumento: { count: 0, percentage: 0 },
-      ausenciaHomeOffice: { count: 0, percentage: 0 },
-      outraOportunidadeEmprego: { count: 0, percentage: 0 },
-      periodoTreinamentoLongo: { count: 0, percentage: 0 },
-      afinidadeProduto: { count: 0, percentage: 0 },
-      residenciaOutraCidade: { count: 0, percentage: 0 },
+      pillars: [] as PillarStats[],
       outros: { count: 0, percentage: 0, entries: [] as string[] },
     };
   }
 
-  const disponibilidadeHorario = responses.filter(r => r.disponibilidadeHorario).length;
-  const localidadeTreinamento = responses.filter(r => r.localidadeTreinamento).length;
-  const pendenciasDocumento = responses.filter(r => r.pendenciasDocumento).length;
-  const ausenciaHomeOffice = responses.filter(r => r.ausenciaHomeOffice).length;
-  const outraOportunidadeEmprego = responses.filter(r => r.outraOportunidadeEmprego).length;
-  const periodoTreinamentoLongo = responses.filter(r => r.periodoTreinamentoLongo).length;
-  const afinidadeProduto = responses.filter(r => r.afinidadeProduto).length;
-  const residenciaOutraCidade = responses.filter(r => r.residenciaOutraCidade).length;
+  // Count selections by pillar and sub-pillar
+  const pillarMap = new Map<string, Map<string, { count: number; label: string }>>();
+
+  responses.forEach(response => {
+    response.selections.forEach(selection => {
+      if (!pillarMap.has(selection.pillarId)) {
+        pillarMap.set(selection.pillarId, new Map());
+      }
+      const subPillarMap = pillarMap.get(selection.pillarId)!;
+
+      if (!subPillarMap.has(selection.subPillarId)) {
+        subPillarMap.set(selection.subPillarId, { count: 0, label: selection.subPillarLabel });
+      }
+      subPillarMap.get(selection.subPillarId)!.count++;
+    });
+  });
+
+  // Convert to array format
+  const pillarStats: PillarStats[] = [];
+  pillarMap.forEach((subPillarMap, pillarId) => {
+    let pillarLabel = '';
+    let pillarTotalCount = 0;
+
+    const subPillars = Array.from(subPillarMap.entries()).map(([subPillarId, data]) => {
+      pillarTotalCount += data.count;
+      return {
+        subPillarId,
+        subPillarLabel: data.label,
+        count: data.count,
+        percentage: (data.count / total) * 100,
+      };
+    });
+
+    // Get pillar label from first sub-pillar selection
+    responses.forEach(r => {
+      const selection = r.selections.find(s => s.pillarId === pillarId);
+      if (selection && !pillarLabel) {
+        pillarLabel = selection.pillarLabel;
+      }
+    });
+
+    pillarStats.push({
+      pillarId,
+      pillarLabel,
+      count: pillarTotalCount,
+      percentage: (pillarTotalCount / total) * 100,
+      subPillars,
+    });
+  });
+
   const outrosEntries = responses.filter(r => r.outros.trim() !== '').map(r => r.outros);
 
   return {
     total,
-    disponibilidadeHorario: { count: disponibilidadeHorario, percentage: (disponibilidadeHorario / total) * 100 },
-    localidadeTreinamento: { count: localidadeTreinamento, percentage: (localidadeTreinamento / total) * 100 },
-    pendenciasDocumento: { count: pendenciasDocumento, percentage: (pendenciasDocumento / total) * 100 },
-    ausenciaHomeOffice: { count: ausenciaHomeOffice, percentage: (ausenciaHomeOffice / total) * 100 },
-    outraOportunidadeEmprego: { count: outraOportunidadeEmprego, percentage: (outraOportunidadeEmprego / total) * 100 },
-    periodoTreinamentoLongo: { count: periodoTreinamentoLongo, percentage: (periodoTreinamentoLongo / total) * 100 },
-    afinidadeProduto: { count: afinidadeProduto, percentage: (afinidadeProduto / total) * 100 },
-    residenciaOutraCidade: { count: residenciaOutraCidade, percentage: (residenciaOutraCidade / total) * 100 },
+    pillars: pillarStats,
     outros: { count: outrosEntries.length, percentage: (outrosEntries.length / total) * 100, entries: outrosEntries },
   };
 }
@@ -117,38 +158,66 @@ export function getStatisticsForFiltered(responses: FormResponse[]) {
   if (total === 0) {
     return {
       total: 0,
-      disponibilidadeHorario: { count: 0, percentage: 0 },
-      localidadeTreinamento: { count: 0, percentage: 0 },
-      pendenciasDocumento: { count: 0, percentage: 0 },
-      ausenciaHomeOffice: { count: 0, percentage: 0 },
-      outraOportunidadeEmprego: { count: 0, percentage: 0 },
-      periodoTreinamentoLongo: { count: 0, percentage: 0 },
-      afinidadeProduto: { count: 0, percentage: 0 },
-      residenciaOutraCidade: { count: 0, percentage: 0 },
+      pillars: [] as PillarStats[],
       outros: { count: 0, percentage: 0, entries: [] as string[] },
     };
   }
 
-  const disponibilidadeHorario = responses.filter(r => r.disponibilidadeHorario).length;
-  const localidadeTreinamento = responses.filter(r => r.localidadeTreinamento).length;
-  const pendenciasDocumento = responses.filter(r => r.pendenciasDocumento).length;
-  const ausenciaHomeOffice = responses.filter(r => r.ausenciaHomeOffice).length;
-  const outraOportunidadeEmprego = responses.filter(r => r.outraOportunidadeEmprego).length;
-  const periodoTreinamentoLongo = responses.filter(r => r.periodoTreinamentoLongo).length;
-  const afinidadeProduto = responses.filter(r => r.afinidadeProduto).length;
-  const residenciaOutraCidade = responses.filter(r => r.residenciaOutraCidade).length;
+  // Count selections by pillar and sub-pillar
+  const pillarMap = new Map<string, Map<string, { count: number; label: string }>>();
+
+  responses.forEach(response => {
+    response.selections.forEach(selection => {
+      if (!pillarMap.has(selection.pillarId)) {
+        pillarMap.set(selection.pillarId, new Map());
+      }
+      const subPillarMap = pillarMap.get(selection.pillarId)!;
+
+      if (!subPillarMap.has(selection.subPillarId)) {
+        subPillarMap.set(selection.subPillarId, { count: 0, label: selection.subPillarLabel });
+      }
+      subPillarMap.get(selection.subPillarId)!.count++;
+    });
+  });
+
+  // Convert to array format
+  const pillarStats: PillarStats[] = [];
+  pillarMap.forEach((subPillarMap, pillarId) => {
+    let pillarLabel = '';
+    let pillarTotalCount = 0;
+
+    const subPillars = Array.from(subPillarMap.entries()).map(([subPillarId, data]) => {
+      pillarTotalCount += data.count;
+      return {
+        subPillarId,
+        subPillarLabel: data.label,
+        count: data.count,
+        percentage: (data.count / total) * 100,
+      };
+    });
+
+    // Get pillar label from first sub-pillar selection
+    responses.forEach(r => {
+      const selection = r.selections.find(s => s.pillarId === pillarId);
+      if (selection && !pillarLabel) {
+        pillarLabel = selection.pillarLabel;
+      }
+    });
+
+    pillarStats.push({
+      pillarId,
+      pillarLabel,
+      count: pillarTotalCount,
+      percentage: (pillarTotalCount / total) * 100,
+      subPillars,
+    });
+  });
+
   const outrosEntries = responses.filter(r => r.outros.trim() !== '').map(r => r.outros);
 
   return {
     total,
-    disponibilidadeHorario: { count: disponibilidadeHorario, percentage: (disponibilidadeHorario / total) * 100 },
-    localidadeTreinamento: { count: localidadeTreinamento, percentage: (localidadeTreinamento / total) * 100 },
-    pendenciasDocumento: { count: pendenciasDocumento, percentage: (pendenciasDocumento / total) * 100 },
-    ausenciaHomeOffice: { count: ausenciaHomeOffice, percentage: (ausenciaHomeOffice / total) * 100 },
-    outraOportunidadeEmprego: { count: outraOportunidadeEmprego, percentage: (outraOportunidadeEmprego / total) * 100 },
-    periodoTreinamentoLongo: { count: periodoTreinamentoLongo, percentage: (periodoTreinamentoLongo / total) * 100 },
-    afinidadeProduto: { count: afinidadeProduto, percentage: (afinidadeProduto / total) * 100 },
-    residenciaOutraCidade: { count: residenciaOutraCidade, percentage: (residenciaOutraCidade / total) * 100 },
+    pillars: pillarStats,
     outros: { count: outrosEntries.length, percentage: (outrosEntries.length / total) * 100, entries: outrosEntries },
   };
 }

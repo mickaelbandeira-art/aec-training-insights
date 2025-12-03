@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { getStatistics, getResponses, clearResponses, type FormResponse, filterResponsesByMonth, getAvailableYears, getStatisticsForFiltered } from '@/lib/storage';
+import { getResponses, clearResponses, type FormResponse, filterResponsesByMonth, getAvailableYears, getStatisticsForFiltered } from '@/lib/storage';
 import { exportToExcel } from '@/lib/exportUtils';
 import { MonthSelector } from '@/components/MonthSelector';
 import { toast } from '@/hooks/use-toast';
@@ -12,36 +12,12 @@ import {
   PieChart, Pie, Cell, Legend
 } from 'recharts';
 import {
-  ArrowLeft, Users, Clock, MapPin, FileText, Home, Briefcase,
-  MessageSquare, Trash2, RefreshCw, TrendingUp, LogOut, Download
+  ArrowLeft, Users, MessageSquare, TrendingUp, LogOut, Download, Layers
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import logo from '@/assets/logo-aec.png';
 
 const CHART_COLORS = ['#003366', '#00BCD4', '#0077B6', '#48CAE4', '#90E0EF', '#CAF0F8'];
-
-const categoryLabels: Record<string, string> = {
-  disponibilidadeHorario: 'Disponibilidade de Horário',
-  localidadeTreinamento: 'Localidade do Treinamento',
-  pendenciasDocumento: 'Pendências de documento',
-  ausenciaHomeOffice: 'Ausência de home office',
-  outraOportunidadeEmprego: 'Outra oportunidade de emprego',
-  periodoTreinamentoLongo: 'Período de treinamento longo e sem remuneração',
-  afinidadeProduto: 'Afinidade com o produto',
-  residenciaOutraCidade: 'Resido em outra cidade e não posso comparecer ao treinamento',
-  outros: 'Outros',
-};
-
-const categoryIcons: Record<string, React.ElementType> = {
-  disponibilidadeHorario: Clock,
-  localidadeTreinamento: MapPin,
-  pendenciasDocumento: FileText,
-  ausenciaHomeOffice: Home,
-  outraOportunidadeEmprego: Briefcase,
-  periodoTreinamentoLongo: Clock,
-  afinidadeProduto: Briefcase,
-  residenciaOutraCidade: MapPin,
-  outros: MessageSquare,
-};
 
 export function AdminDashboard() {
   const navigate = useNavigate();
@@ -101,6 +77,7 @@ export function AdminDashboard() {
         description: `${responses.length} resposta(s) exportada(s).`,
       });
     } catch (error) {
+      console.error(error);
       toast({
         variant: "destructive",
         title: "Erro ao exportar",
@@ -128,31 +105,14 @@ export function AdminDashboard() {
     return () => clearInterval(interval);
   }, [selectedMonth, selectedYear]);
 
-  const barChartData = [
-    { name: 'Disp. Horário', value: stats.disponibilidadeHorario.count, fullName: categoryLabels.disponibilidadeHorario },
-    { name: 'Localidade', value: stats.localidadeTreinamento.count, fullName: categoryLabels.localidadeTreinamento },
-    { name: 'Pendências', value: stats.pendenciasDocumento.count, fullName: categoryLabels.pendenciasDocumento },
-    { name: 'Home Office', value: stats.ausenciaHomeOffice.count, fullName: categoryLabels.ausenciaHomeOffice },
-    { name: 'Outra Oport.', value: stats.outraOportunidadeEmprego.count, fullName: categoryLabels.outraOportunidadeEmprego },
-    { name: 'Período Longo', value: stats.periodoTreinamentoLongo.count, fullName: categoryLabels.periodoTreinamentoLongo },
-    { name: 'Afinidade', value: stats.afinidadeProduto.count, fullName: categoryLabels.afinidadeProduto },
-    { name: 'Outra Cidade', value: stats.residenciaOutraCidade.count, fullName: categoryLabels.residenciaOutraCidade },
-    { name: 'Outros', value: stats.outros.count, fullName: categoryLabels.outros },
-  ];
+  // Prepare chart data from pillars
+  const barChartData = stats.pillars.map(pillar => ({
+    name: pillar.pillarLabel,
+    value: pillar.count,
+    fullName: pillar.pillarLabel
+  }));
 
   const pieChartData = barChartData.filter(item => item.value > 0);
-
-  const statCards = [
-    { key: 'disponibilidadeHorario', ...stats.disponibilidadeHorario },
-    { key: 'localidadeTreinamento', ...stats.localidadeTreinamento },
-    { key: 'pendenciasDocumento', ...stats.pendenciasDocumento },
-    { key: 'ausenciaHomeOffice', ...stats.ausenciaHomeOffice },
-    { key: 'outraOportunidadeEmprego', ...stats.outraOportunidadeEmprego },
-    { key: 'periodoTreinamentoLongo', ...stats.periodoTreinamentoLongo },
-    { key: 'afinidadeProduto', ...stats.afinidadeProduto },
-    { key: 'residenciaOutraCidade', ...stats.residenciaOutraCidade },
-    { key: 'outros', count: stats.outros.count, percentage: stats.outros.percentage },
-  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -235,35 +195,74 @@ export function AdminDashboard() {
           </CardContent>
         </Card>
 
-        {/* Stats Grid */}
+        {/* Stats Grid - Dynamic Pillars */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          {statCards.map((stat, index) => {
-            const Icon = categoryIcons[stat.key];
-            return (
-              <Card
-                key={stat.key}
-                className="border-0 shadow-md hover:shadow-lg transition-all duration-300 animate-fade-in"
-                style={{ animationDelay: `${(index + 2) * 0.1}s` }}
-              >
-                <CardContent className="p-5">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="text-muted-foreground text-sm font-medium mb-1">
-                        {categoryLabels[stat.key]}
-                      </p>
-                      <p className="text-3xl font-bold text-foreground">{stat.count}</p>
-                      <p className="text-secondary text-sm font-semibold">
-                        {stat.percentage.toFixed(1)}%
-                      </p>
-                    </div>
-                    <div className="p-3 bg-secondary/10 rounded-lg">
-                      <Icon className="w-6 h-6 text-secondary" />
-                    </div>
+          {stats.pillars.map((pillar, index) => (
+            <Card
+              key={pillar.pillarId}
+              className="border-0 shadow-md hover:shadow-lg transition-all duration-300 animate-fade-in"
+              style={{ animationDelay: `${(index + 2) * 0.1}s` }}
+            >
+              <CardContent className="p-5">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <p className="text-muted-foreground text-sm font-medium mb-1">
+                      {pillar.pillarLabel}
+                    </p>
+                    <p className="text-3xl font-bold text-foreground">{pillar.count}</p>
+                    <p className="text-secondary text-sm font-semibold">
+                      {pillar.percentage.toFixed(1)}%
+                    </p>
                   </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+                  <div className="p-3 bg-secondary/10 rounded-lg">
+                    <Layers className="w-6 h-6 text-secondary" />
+                  </div>
+                </div>
+
+                {/* Sub-pillars breakdown */}
+                {pillar.subPillars.length > 0 && (
+                  <div className="space-y-2 mt-4 pt-4 border-t border-border/50">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Principais motivos:</p>
+                    {pillar.subPillars
+                      .sort((a, b) => b.count - a.count)
+                      .slice(0, 3) // Show top 3 sub-pillars
+                      .map(sub => (
+                        <div key={sub.subPillarId} className="flex justify-between items-center text-sm">
+                          <span className="text-foreground/80 truncate max-w-[180px]" title={sub.subPillarLabel}>
+                            {sub.subPillarLabel}
+                          </span>
+                          <span className="font-medium text-secondary">{sub.count}</span>
+                        </div>
+                      ))
+                    }
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+
+          {/* Outros Card */}
+          <Card
+            className="border-0 shadow-md hover:shadow-lg transition-all duration-300 animate-fade-in"
+            style={{ animationDelay: `${(stats.pillars.length + 2) * 0.1}s` }}
+          >
+            <CardContent className="p-5">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-muted-foreground text-sm font-medium mb-1">
+                    Outros
+                  </p>
+                  <p className="text-3xl font-bold text-foreground">{stats.outros.count}</p>
+                  <p className="text-secondary text-sm font-semibold">
+                    {stats.outros.percentage.toFixed(1)}%
+                  </p>
+                </div>
+                <div className="p-3 bg-secondary/10 rounded-lg">
+                  <MessageSquare className="w-6 h-6 text-secondary" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Charts Section */}
@@ -271,8 +270,8 @@ export function AdminDashboard() {
           {/* Bar Chart */}
           <Card className="border-0 shadow-lg animate-fade-in" style={{ animationDelay: '0.8s' }}>
             <CardHeader>
-              <CardTitle className="text-lg">Distribuição por Categoria</CardTitle>
-              <CardDescription>Quantidade de respostas por motivo</CardDescription>
+              <CardTitle className="text-lg">Distribuição por Pilar</CardTitle>
+              <CardDescription>Quantidade de respostas por categoria principal</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-[300px]">
@@ -284,6 +283,10 @@ export function AdminDashboard() {
                         dataKey="name"
                         tick={{ fill: '#666', fontSize: 11 }}
                         axisLine={{ stroke: '#ccc' }}
+                        interval={0}
+                        angle={-45}
+                        textAnchor="end"
+                        height={80}
                       />
                       <YAxis
                         tick={{ fill: '#666' }}
@@ -321,7 +324,7 @@ export function AdminDashboard() {
           {/* Pie Chart */}
           <Card className="border-0 shadow-lg animate-fade-in" style={{ animationDelay: '0.9s' }}>
             <CardHeader>
-              <CardTitle className="text-lg">Proporção de Respostas</CardTitle>
+              <CardTitle className="text-lg">Proporção de Pilares</CardTitle>
               <CardDescription>Visualização em porcentagem</CardDescription>
             </CardHeader>
             <CardContent>
@@ -337,7 +340,7 @@ export function AdminDashboard() {
                         outerRadius={100}
                         paddingAngle={2}
                         dataKey="value"
-                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
                         labelLine={false}
                       >
                         {pieChartData.map((_, index) => (
@@ -415,21 +418,14 @@ export function AdminDashboard() {
                       <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm">Data/Hora</th>
                       <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm">Nome</th>
                       <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden sm:table-cell">Telefone</th>
-                      <th className="text-center p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden md:table-cell">Disp. Horário</th>
-                      <th className="text-center p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden lg:table-cell">Localidade</th>
-                      <th className="text-center p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden lg:table-cell">Pendências</th>
-                      <th className="text-center p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden xl:table-cell">Home Office</th>
-                      <th className="text-center p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden md:table-cell">Outra Oport.</th>
-                      <th className="text-center p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden xl:table-cell">Período Longo</th>
-                      <th className="text-center p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden xl:table-cell">Afinidade</th>
-                      <th className="text-center p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden lg:table-cell">Outra Cidade</th>
+                      <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm">Motivos Selecionados</th>
                       <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm">Outros</th>
                     </tr>
                   </thead>
                   <tbody>
                     {responses.slice().reverse().slice(0, 10).map((response) => (
                       <tr key={response.id} className="border-b hover:bg-muted/30 transition-colors">
-                        <td className="p-2 sm:p-3 text-muted-foreground text-xs sm:text-sm whitespace-nowrap">
+                        <td className="p-2 sm:p-3 text-muted-foreground text-xs sm:text-sm whitespace-nowrap align-top">
                           {new Date(response.timestamp).toLocaleString('pt-BR', {
                             day: '2-digit',
                             month: '2-digit',
@@ -437,53 +433,27 @@ export function AdminDashboard() {
                             minute: '2-digit'
                           })}
                         </td>
-                        <td className="p-2 sm:p-3 text-foreground text-xs sm:text-sm font-medium">
+                        <td className="p-2 sm:p-3 text-foreground text-xs sm:text-sm font-medium align-top">
                           {response.nome || '-'}
                         </td>
-                        <td className="p-2 sm:p-3 text-muted-foreground text-xs sm:text-sm hidden sm:table-cell">
+                        <td className="p-2 sm:p-3 text-muted-foreground text-xs sm:text-sm hidden sm:table-cell align-top">
                           {response.telefone || '-'}
                         </td>
-                        <td className="p-2 sm:p-3 text-center hidden md:table-cell">
-                          {response.disponibilidadeHorario && (
-                            <span className="inline-block w-3 h-3 sm:w-4 sm:h-4 bg-secondary rounded-full" />
-                          )}
+                        <td className="p-2 sm:p-3 align-top">
+                          <div className="flex flex-wrap gap-1">
+                            {response.selections && response.selections.length > 0 ? (
+                              response.selections.map((selection, idx) => (
+                                <Badge key={idx} variant="outline" className="text-xs bg-background">
+                                  <span className="font-semibold mr-1">{selection.pillarLabel}:</span>
+                                  {selection.subPillarLabel}
+                                </Badge>
+                              ))
+                            ) : (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </div>
                         </td>
-                        <td className="p-2 sm:p-3 text-center hidden lg:table-cell">
-                          {response.localidadeTreinamento && (
-                            <span className="inline-block w-3 h-3 sm:w-4 sm:h-4 bg-secondary rounded-full" />
-                          )}
-                        </td>
-                        <td className="p-2 sm:p-3 text-center hidden lg:table-cell">
-                          {response.pendenciasDocumento && (
-                            <span className="inline-block w-3 h-3 sm:w-4 sm:h-4 bg-secondary rounded-full" />
-                          )}
-                        </td>
-                        <td className="p-2 sm:p-3 text-center hidden xl:table-cell">
-                          {response.ausenciaHomeOffice && (
-                            <span className="inline-block w-3 h-3 sm:w-4 sm:h-4 bg-secondary rounded-full" />
-                          )}
-                        </td>
-                        <td className="p-2 sm:p-3 text-center hidden md:table-cell">
-                          {response.outraOportunidadeEmprego && (
-                            <span className="inline-block w-3 h-3 sm:w-4 sm:h-4 bg-secondary rounded-full" />
-                          )}
-                        </td>
-                        <td className="p-2 sm:p-3 text-center hidden xl:table-cell">
-                          {response.periodoTreinamentoLongo && (
-                            <span className="inline-block w-3 h-3 sm:w-4 sm:h-4 bg-secondary rounded-full" />
-                          )}
-                        </td>
-                        <td className="p-2 sm:p-3 text-center hidden xl:table-cell">
-                          {response.afinidadeProduto && (
-                            <span className="inline-block w-3 h-3 sm:w-4 sm:h-4 bg-secondary rounded-full" />
-                          )}
-                        </td>
-                        <td className="p-2 sm:p-3 text-center hidden lg:table-cell">
-                          {response.residenciaOutraCidade && (
-                            <span className="inline-block w-3 h-3 sm:w-4 sm:h-4 bg-secondary rounded-full" />
-                          )}
-                        </td>
-                        <td className="p-2 sm:p-3 text-muted-foreground max-w-[120px] sm:max-w-[200px] truncate text-xs sm:text-sm">
+                        <td className="p-2 sm:p-3 text-muted-foreground max-w-[120px] sm:max-w-[200px] truncate text-xs sm:text-sm align-top">
                           {response.outros || '-'}
                         </td>
                       </tr>

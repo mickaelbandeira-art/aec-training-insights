@@ -6,41 +6,71 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { saveResponse } from '@/lib/storage';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { saveResponse, PillarSelection } from '@/lib/storage';
+import { pillars, Pillar } from '@/data/pillarData';
 import { toast } from '@/hooks/use-toast';
-import { CheckCircle2, Send, Clock, MapPin, FileText, Home, Briefcase, MessageSquare, User, Phone } from 'lucide-react';
+import { CheckCircle2, Send, X, Plus } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import logo from '@/assets/logo-aec.png';
-
-const formOptions = [
-  { id: 'disponibilidadeHorario', label: 'Não tenho disponibilidade de horário compatível.', icon: Clock },
-  { id: 'localidadeTreinamento', label: 'A localização do treinamento não é acessível para mim.', icon: MapPin },
-  { id: 'pendenciasDocumento', label: 'Tenho pendências de documentação.', icon: FileText },
-  { id: 'ausenciaHomeOffice', label: 'A falta de opção de home office me impede de seguir.', icon: Home },
-  { id: 'outraOportunidadeEmprego', label: 'Estou seguindo outra oportunidade de emprego.', icon: Briefcase },
-  { id: 'periodoTreinamentoLongo', label: 'O treinamento longo e sem remuneração é um impeditivo.', icon: Clock },
-  { id: 'afinidadeProduto', label: 'Não tenho afinidade com o produto/serviço da operação.', icon: Briefcase },
-  { id: 'residenciaOutraCidade', label: 'Resido em outra cidade e não posso comparecer ao treinamento presencial.', icon: MapPin },
-];
 
 export function TrainingForm() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nome: '',
     telefone: '',
-    disponibilidadeHorario: false,
-    localidadeTreinamento: false,
-    pendenciasDocumento: false,
-    ausenciaHomeOffice: false,
-    outraOportunidadeEmprego: false,
-    periodoTreinamentoLongo: false,
-    afinidadeProduto: false,
-    residenciaOutraCidade: false,
     outros: '',
   });
+  const [selectedPillar, setSelectedPillar] = useState<string>('');
+  const [selectedSubPillars, setSelectedSubPillars] = useState<string[]>([]);
+  const [allSelections, setAllSelections] = useState<PillarSelection[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleCheckboxChange = (id: string, checked: boolean) => {
-    setFormData(prev => ({ ...prev, [id]: checked }));
+  const currentPillar = pillars.find(p => p.id === selectedPillar);
+
+  const handleAddSelections = () => {
+    if (!selectedPillar || selectedSubPillars.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Seleção incompleta",
+        description: "Por favor, selecione um pilar e pelo menos um subpilar.",
+      });
+      return;
+    }
+
+    const pillar = pillars.find(p => p.id === selectedPillar);
+    if (!pillar) return;
+
+    const newSelections: PillarSelection[] = selectedSubPillars.map(subPillarId => {
+      const subPillar = pillar.subPillars.find(sp => sp.id === subPillarId);
+      return {
+        pillarId: pillar.id,
+        pillarLabel: pillar.label,
+        subPillarId: subPillar!.id,
+        subPillarLabel: subPillar!.label,
+      };
+    });
+
+    setAllSelections([...allSelections, ...newSelections]);
+    setSelectedPillar('');
+    setSelectedSubPillars([]);
+
+    toast({
+      title: "Seleções adicionadas!",
+      description: `${newSelections.length} motivo(s) adicionado(s).`,
+    });
+  };
+
+  const handleRemoveSelection = (index: number) => {
+    setAllSelections(allSelections.filter((_, i) => i !== index));
+  };
+
+  const handleSubPillarToggle = (subPillarId: string) => {
+    setSelectedSubPillars(prev =>
+      prev.includes(subPillarId)
+        ? prev.filter(id => id !== subPillarId)
+        : [...prev, subPillarId]
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -61,7 +91,12 @@ export function TrainingForm() {
     // Simulate a small delay for better UX
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    saveResponse(formData);
+    saveResponse({
+      nome: formData.nome,
+      telefone: formData.telefone,
+      selections: allSelections,
+      outros: formData.outros,
+    });
 
     toast({
       title: "Formulário enviado com sucesso!",
@@ -72,16 +107,11 @@ export function TrainingForm() {
     setFormData({
       nome: '',
       telefone: '',
-      disponibilidadeHorario: false,
-      localidadeTreinamento: false,
-      pendenciasDocumento: false,
-      ausenciaHomeOffice: false,
-      outraOportunidadeEmprego: false,
-      periodoTreinamentoLongo: false,
-      afinidadeProduto: false,
-      residenciaOutraCidade: false,
       outros: '',
     });
+    setAllSelections([]);
+    setSelectedPillar('');
+    setSelectedSubPillars([]);
 
     setIsSubmitting(false);
   };
@@ -111,7 +141,7 @@ export function TrainingForm() {
         </header>
 
         {/* Main Form Card */}
-        <Card className="max-w-2xl mx-auto shadow-xl border-0 bg-card/80 backdrop-blur-sm animate-fade-in" style={{ animationDelay: '0.1s' }}>
+        <Card className="max-w-3xl mx-auto shadow-xl border-0 bg-card/80 backdrop-blur-sm animate-fade-in" style={{ animationDelay: '0.1s' }}>
           <CardHeader className="gradient-primary text-primary-foreground rounded-t-lg pb-8">
             <div className="flex items-center gap-3 mb-2">
               <CheckCircle2 className="w-8 h-8 text-secondary" />
@@ -120,7 +150,7 @@ export function TrainingForm() {
               </CardTitle>
             </div>
             <CardDescription className="text-primary-foreground/80 text-base">
-              Por favor, selecione os motivos que se aplicam à sua situação
+              Selecione os motivos que se aplicam à sua situação
             </CardDescription>
           </CardHeader>
 
@@ -129,12 +159,9 @@ export function TrainingForm() {
               {/* Name and Phone Fields */}
               <div className="space-y-4 pb-4 border-b border-border">
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <User className="w-5 h-5 text-secondary" />
-                    <Label htmlFor="nome" className="text-base font-medium">
-                      Nome Completo <span className="text-destructive">*</span>
-                    </Label>
-                  </div>
+                  <Label htmlFor="nome" className="text-base font-medium">
+                    Nome Completo <span className="text-destructive">*</span>
+                  </Label>
                   <Input
                     id="nome"
                     type="text"
@@ -147,12 +174,9 @@ export function TrainingForm() {
                 </div>
 
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Phone className="w-5 h-5 text-secondary" />
-                    <Label htmlFor="telefone" className="text-base font-medium">
-                      Telefone <span className="text-destructive">*</span>
-                    </Label>
-                  </div>
+                  <Label htmlFor="telefone" className="text-base font-medium">
+                    Telefone <span className="text-destructive">*</span>
+                  </Label>
                   <Input
                     id="telefone"
                     type="tel"
@@ -165,47 +189,99 @@ export function TrainingForm() {
                 </div>
               </div>
 
-              {/* Checkbox Options */}
+              {/* Pillar Selection */}
               <div className="space-y-4">
-                {formOptions.map((option, index) => {
-                  const Icon = option.icon;
-                  return (
-                    <div
-                      key={option.id}
-                      className="flex items-center justify-between p-4 rounded-lg border border-border hover:border-secondary hover:bg-muted/50 transition-all duration-300 group animate-slide-in"
-                      style={{ animationDelay: `${(index + 1) * 0.1}s` }}
-                    >
-                      <div className="flex items-center space-x-3 flex-1">
-                        <Icon className="w-5 h-5 text-muted-foreground group-hover:text-secondary transition-colors flex-shrink-0" />
-                        <Label
-                          htmlFor={option.id}
-                          className="text-base font-medium cursor-pointer group-hover:text-foreground transition-colors"
+                <div className="space-y-2">
+                  <Label className="text-base font-medium">
+                    Selecione o motivo principal (Pilar)
+                  </Label>
+                  <Select value={selectedPillar} onValueChange={setSelectedPillar}>
+                    <SelectTrigger className="border-2 focus:border-secondary focus:ring-secondary/20">
+                      <SelectValue placeholder="Escolha um pilar..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {pillars.map(pillar => (
+                        <SelectItem key={pillar.id} value={pillar.id}>
+                          {pillar.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Sub-Pillar Selection */}
+                {currentPillar && (
+                  <div className="space-y-3 animate-fade-in">
+                    <Label className="text-base font-medium">
+                      Selecione os motivos específicos
+                    </Label>
+                    <div className="space-y-2 p-4 rounded-lg border-2 border-secondary/20 bg-muted/30">
+                      {currentPillar.subPillars.map(subPillar => (
+                        <div
+                          key={subPillar.id}
+                          className="flex items-center justify-between p-3 rounded-lg border border-border hover:border-secondary hover:bg-muted/50 transition-all duration-300"
                         >
-                          {option.label}
-                        </Label>
-                      </div>
-                      <Checkbox
-                        id={option.id}
-                        checked={formData[option.id as keyof typeof formData] as boolean}
-                        onCheckedChange={(checked) => handleCheckboxChange(option.id, checked as boolean)}
-                        className="h-5 w-5 border-2 data-[state=checked]:bg-secondary data-[state=checked]:border-secondary flex-shrink-0 ml-4"
-                      />
+                          <Label
+                            htmlFor={subPillar.id}
+                            className="text-sm font-medium cursor-pointer flex-1"
+                          >
+                            {subPillar.label}
+                          </Label>
+                          <Checkbox
+                            id={subPillar.id}
+                            checked={selectedSubPillars.includes(subPillar.id)}
+                            onCheckedChange={() => handleSubPillarToggle(subPillar.id)}
+                            className="h-5 w-5 border-2 data-[state=checked]:bg-secondary data-[state=checked]:border-secondary ml-4"
+                          />
+                        </div>
+                      ))}
                     </div>
-                  );
-                })}
+
+                    <Button
+                      type="button"
+                      onClick={handleAddSelections}
+                      className="w-full gradient-accent hover:opacity-90 transition-all"
+                    >
+                      <Plus className="w-5 h-5 mr-2" />
+                      Adicionar Seleções
+                    </Button>
+                  </div>
+                )}
               </div>
 
-              {/* Outros - Text Input */}
-              <div
-                className="space-y-3 animate-slide-in"
-                style={{ animationDelay: '0.6s' }}
-              >
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-secondary" />
-                  <Label htmlFor="outros" className="text-base font-medium">
-                    Outros
+              {/* Selected Items Display */}
+              {allSelections.length > 0 && (
+                <div className="space-y-3">
+                  <Label className="text-base font-medium">
+                    Motivos selecionados ({allSelections.length})
                   </Label>
+                  <div className="flex flex-wrap gap-2 p-4 rounded-lg border-2 border-secondary/20 bg-muted/30">
+                    {allSelections.map((selection, index) => (
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="px-3 py-2 text-sm flex items-center gap-2 hover:bg-secondary/80 transition-colors"
+                      >
+                        <span className="font-semibold">{selection.pillarLabel}:</span>
+                        <span>{selection.subPillarLabel}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSelection(index)}
+                          className="ml-1 hover:text-destructive transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
+              )}
+
+              {/* Outros - Text Input */}
+              <div className="space-y-3">
+                <Label htmlFor="outros" className="text-base font-medium">
+                  Outros motivos (opcional)
+                </Label>
                 <Textarea
                   id="outros"
                   placeholder="Descreva outros motivos aqui..."
