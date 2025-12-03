@@ -148,16 +148,28 @@ export function AdminDashboard() {
             </Button>
             <img src={logo} alt="AeC Logo" className="h-8 sm:h-10 object-contain brightness-0 invert" />
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleLogout}
-            className="border-white/50 bg-white/10 hover:bg-white/20 w-full sm:w-auto text-sm"
-            style={{ color: 'white' }}
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            <span style={{ color: 'white' }}>Sair</span>
-          </Button>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportExcel}
+              className="border-white/50 bg-white/10 hover:bg-white/20 flex-1 sm:flex-initial text-sm"
+              style={{ color: 'white' }}
+            >
+              <Download className="w-4 h-4 mr-2" />
+              <span style={{ color: 'white' }}>Exportar Excel</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+              className="border-white/50 bg-white/10 hover:bg-white/20 flex-1 sm:flex-initial text-sm"
+              style={{ color: 'white' }}
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              <span style={{ color: 'white' }}>Sair</span>
+            </Button>
+          </div>
         </div>
       </header>
 
