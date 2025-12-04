@@ -419,6 +419,7 @@ export function AdminDashboard() {
                       <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm">Nome</th>
                       <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden sm:table-cell">CPF</th>
                       <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden sm:table-cell">Telefone</th>
+                      <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm hidden lg:table-cell">Código da Turma</th>
                       <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm">Motivos Selecionados</th>
                       <th className="text-left p-2 sm:p-3 font-semibold text-xs sm:text-sm">Outros</th>
                     </tr>
@@ -442,6 +443,9 @@ export function AdminDashboard() {
                         </td>
                         <td className="p-2 sm:p-3 text-muted-foreground text-xs sm:text-sm hidden sm:table-cell align-top">
                           {response.telefone || '-'}
+                        </td>
+                        <td className="p-2 sm:p-3 text-muted-foreground text-xs sm:text-sm hidden lg:table-cell align-top">
+                          {response.codigoTurma || '-'}
                         </td>
                         <td className="p-2 sm:p-3 align-top">
                           <div className="flex flex-wrap gap-1">

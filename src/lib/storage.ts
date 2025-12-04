@@ -11,6 +11,7 @@ export interface FormResponse {
   nome: string;
   cpf: string;
   telefone: string;
+  codigoTurma: string;
   selections: PillarSelection[];
   outros: string;
 }

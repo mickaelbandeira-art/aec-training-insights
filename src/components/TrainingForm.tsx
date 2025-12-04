@@ -20,6 +20,7 @@ export function TrainingForm() {
     nome: '',
     cpf: '',
     telefone: '',
+    codigoTurma: '',
     outros: '',
   });
   const [selectedPillar, setSelectedPillar] = useState<string>('');
@@ -76,11 +77,11 @@ export function TrainingForm() {
     e.preventDefault();
 
     // Validate required fields
-    if (!formData.nome.trim() || !formData.telefone.trim() || !formData.cpf.trim()) {
+    if (!formData.nome.trim() || !formData.telefone.trim() || !formData.cpf.trim() || !formData.codigoTurma.trim()) {
       toast({
         variant: "destructive",
         title: "Campos obrigatórios",
-        description: "Por favor, preencha nome, CPF e telefone.",
+        description: "Por favor, preencha nome, CPF, telefone e código da turma.",
       });
       return;
     }
@@ -94,6 +95,7 @@ export function TrainingForm() {
       nome: formData.nome,
       cpf: formData.cpf,
       telefone: formData.telefone,
+      codigoTurma: formData.codigoTurma,
       selections: allSelections,
       outros: formData.outros,
     });
@@ -108,6 +110,7 @@ export function TrainingForm() {
       nome: '',
       cpf: '',
       telefone: '',
+      codigoTurma: '',
       outros: '',
     });
     setAllSelections([]);
@@ -206,6 +209,21 @@ export function TrainingForm() {
                     placeholder="(00) 00000-0000"
                     value={formData.telefone}
                     onChange={(e) => setFormData(prev => ({ ...prev, telefone: e.target.value }))}
+                    className="border-2 focus:border-secondary focus:ring-secondary/20 transition-all"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="codigoTurma" className="text-base font-medium">
+                    Código da Turma <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="codigoTurma"
+                    type="text"
+                    placeholder="Digite o código da turma Rekrut"
+                    value={formData.codigoTurma}
+                    onChange={(e) => setFormData(prev => ({ ...prev, codigoTurma: e.target.value }))}
                     className="border-2 focus:border-secondary focus:ring-secondary/20 transition-all"
                     required
                   />

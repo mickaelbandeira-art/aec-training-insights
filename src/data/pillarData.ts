@@ -62,6 +62,28 @@ export const pillars: Pillar[] = [
       { id: 'nao_entrega_documentacao', label: 'Não entrega das documentações necessárias' },
     ],
   },
+  {
+    id: 'produtos',
+    label: 'Produtos',
+    subPillars: [
+      { id: 'banco_inter', label: 'BANCO INTER' },
+      { id: 'carrefour_banco', label: 'CARREFOUR BANCO' },
+      { id: 'carrefour_varejo', label: 'CARREFOUR VAREJO' },
+      { id: 'claro_controle', label: 'CLARO CONTROLE' },
+      { id: 'claro_movel_crc', label: 'CLARO MOVEL CRC' },
+      { id: 'claro_retencao_ativo', label: 'CLARO RETENÇÃO ATIVO' },
+      { id: 'claro_tv', label: 'CLARO TV' },
+      { id: 'ifood_cx', label: 'IFOOD CX' },
+      { id: 'ifood_dx', label: 'IFOOD DX' },
+      { id: 'ifood_estruturantes', label: 'IFOOD ESTRUTURANTES' },
+      { id: 'ifood_nr', label: 'IFOOD NR' },
+      { id: 'ifood_px', label: 'IFOOD PX' },
+      { id: 'ifood_ra', label: 'IFOOD RA' },
+      { id: 'movilepay', label: 'MOVILEPAY' },
+      { id: 'porto_seguro', label: 'PORTO SEGURO' },
+      { id: 'stone', label: 'STONE' },
+    ],
+  },
 ];
 
 // Helper function to get pillar by ID

@@ -25,6 +25,7 @@ export function exportToExcel(responses: FormResponse[], filename: string = 'res
       'Nome': response.nome || '-',
       'CPF': response.cpf || '-',
       'Telefone': response.telefone || '-',
+      'Código da Turma': response.codigoTurma || '-',
       'Motivos Selecionados': selectionsText || '-',
       'Outros': response.outros || '-',
     };
