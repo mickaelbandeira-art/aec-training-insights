@@ -23,18 +23,18 @@ export function TrainingForm() {
     outros: '',
   });
   const [selectedPillar, setSelectedPillar] = useState<string>('');
-  const [selectedSubPillars, setSelectedSubPillars] = useState<string[]>([]);
+  const [selectedSubPillar, setSelectedSubPillar] = useState<string>('');
   const [allSelections, setAllSelections] = useState<PillarSelection[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const currentPillar = pillars.find(p => p.id === selectedPillar);
 
   const handleAddSelections = () => {
-    if (!selectedPillar || selectedSubPillars.length === 0) {
+    if (!selectedPillar || !selectedSubPillar) {
       toast({
         variant: "destructive",
         title: "Seleção incompleta",
-        description: "Por favor, selecione um pilar e pelo menos um subpilar.",
+        description: "Por favor, selecione um pilar e um subpilar.",
       });
       return;
     }
@@ -42,23 +42,23 @@ export function TrainingForm() {
     const pillar = pillars.find(p => p.id === selectedPillar);
     if (!pillar) return;
 
-    const newSelections: PillarSelection[] = selectedSubPillars.map(subPillarId => {
-      const subPillar = pillar.subPillars.find(sp => sp.id === subPillarId);
-      return {
-        pillarId: pillar.id,
-        pillarLabel: pillar.label,
-        subPillarId: subPillar!.id,
-        subPillarLabel: subPillar!.label,
-      };
-    });
+    const subPillar = pillar.subPillars.find(sp => sp.id === selectedSubPillar);
+    if (!subPillar) return;
 
-    setAllSelections([...allSelections, ...newSelections]);
+    const newSelection: PillarSelection = {
+      pillarId: pillar.id,
+      pillarLabel: pillar.label,
+      subPillarId: subPillar.id,
+      subPillarLabel: subPillar.label,
+    };
+
+    setAllSelections([...allSelections, newSelection]);
     setSelectedPillar('');
-    setSelectedSubPillars([]);
+    setSelectedSubPillar('');
 
     toast({
-      title: "Seleções adicionadas!",
-      description: `${newSelections.length} motivo(s) adicionado(s).`,
+      title: "Seleção adicionada!",
+      description: "Motivo adicionado com sucesso.",
     });
   };
 
@@ -67,10 +67,8 @@ export function TrainingForm() {
   };
 
   const handleSubPillarToggle = (subPillarId: string) => {
-    setSelectedSubPillars(prev =>
-      prev.includes(subPillarId)
-        ? prev.filter(id => id !== subPillarId)
-        : [...prev, subPillarId]
+    setSelectedSubPillar(prev =>
+      prev === subPillarId ? '' : subPillarId
     );
   };
 
@@ -114,7 +112,7 @@ export function TrainingForm() {
     });
     setAllSelections([]);
     setSelectedPillar('');
-    setSelectedSubPillars([]);
+    setSelectedSubPillar('');
 
     setIsSubmitting(false);
   };
@@ -238,7 +236,7 @@ export function TrainingForm() {
                 {currentPillar && (
                   <div className="space-y-3 animate-fade-in">
                     <Label className="text-base font-medium">
-                      Selecione os motivos específicos
+                      Selecione o motivo específico
                     </Label>
                     <div className="space-y-2 p-4 rounded-lg border-2 border-secondary/20 bg-muted/30">
                       {currentPillar.subPillars.map(subPillar => (
@@ -254,7 +252,7 @@ export function TrainingForm() {
                           </Label>
                           <Checkbox
                             id={subPillar.id}
-                            checked={selectedSubPillars.includes(subPillar.id)}
+                            checked={selectedSubPillar === subPillar.id}
                             onCheckedChange={() => handleSubPillarToggle(subPillar.id)}
                             className="h-5 w-5 border-2 data-[state=checked]:bg-secondary data-[state=checked]:border-secondary ml-4"
                           />
@@ -268,7 +266,7 @@ export function TrainingForm() {
                       className="w-full gradient-accent hover:opacity-90 transition-all"
                     >
                       <Plus className="w-5 h-5 mr-2" />
-                      Adicionar Seleções
+                      Adicionar Seleção
                     </Button>
                   </div>
                 )}
